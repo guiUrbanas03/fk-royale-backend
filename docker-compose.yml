@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  fk-royale-flask:
+    env_file:
+       - .env
+    container_name: fk-royale-flask
+    platform: linux/amd64
+    depends_on:
+      - fk-royale-postgres
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    restart: always
+  
+  fk-royale-postgres:
+    container_name: fk-royale-postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      PGPASSWORD: secret
+      POSTGRES_DB: fk-royale
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - fk-royale-postgres:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  fk-royale-postgres:

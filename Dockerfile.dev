@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+
+FROM python:3.10-slim-buster as python-build
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    POETRY_NO_INTERACTION=true \
+    POETRY_NO_ANSI=true \
+    POETRY_INSTALLER_NO_BINARY=:all: \
+    FLASK_APP=source:create_app \
+    FLASK_DEBUG=1 \
+    FLASK_ENV=development
+
+RUN apt-get update && apt-get install -y curl --no-install-recommends && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get install nano && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/root/.local/bin:$PATH"
+
+FROM python-build AS python-runtime
+
+COPY ./config ./config
+
+COPY ./gunicorn.conf.py ./gunicorn.conf.py
+
+COPY ./pyproject.toml ./poetry.lock* ./
+
+RUN poetry export -f requirements.txt --output requirements.txt && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY ./source ./source
+
+EXPOSE 8000
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+
+
