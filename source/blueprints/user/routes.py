@@ -53,7 +53,6 @@ def create_user():
     db.session.commit()
 
     return DataResponse(
-        USER_BLUEPRINT_NAME,
         "User created succesfully",
         201,
         {

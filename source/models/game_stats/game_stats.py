@@ -24,4 +24,4 @@ class GameStats(db.Model):
         UUID(as_uuid=True), db.ForeignKey("profiles.id"), unique=True, nullable=False
     )
 
-    profile = db.relationship("Profile", backref="game_stats")
+    profile = db.relationship("Profile", uselist=False, back_populates="game_stats")

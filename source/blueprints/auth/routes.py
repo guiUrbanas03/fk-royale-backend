@@ -13,6 +13,8 @@ from source.blueprints.auth.services import create_revoked_token, get_revoked_to
 from source.blueprints.user.services import get_user_by_id, verify_user_credentials
 from source.constants.blueprints import AUTH_BLUEPRINT_NAME
 from source.dtos.auth import LoginUserDTO
+from source.dtos.game_stats import GameStatsResourceDTO
+from source.dtos.profile import ProfileResourceDTO
 from source.dtos.revoked_token import CreateRevokedTokenDTO, RevokedTokenResourceDTO
 from source.dtos.user import UserResourceDTO
 from source.errors.json_error import CauseTypeError, jwt_error
@@ -94,7 +96,13 @@ def logout():
 def who_am_i():
     """Get current logged in user."""
     return DataResponse(
-        "User retrieved successfully", 200, {"user": UserResourceDTO().dump(current_user)}
+        "User retrieved successfully",
+        200,
+        {
+            "user": UserResourceDTO().dump(current_user),
+            "profile": ProfileResourceDTO().dump(current_user.profile),
+            "game_stats": GameStatsResourceDTO().dump(current_user.profile.game_stats),
+        },
     ).json()
 
 

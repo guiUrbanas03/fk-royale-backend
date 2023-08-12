@@ -17,6 +17,7 @@ class User(db.Model):
     created_at = created_at()
     updated_at = updated_at()
     deleted_at = deleted_at()
+    profile = db.relationship("Profile", uselist=False, back_populates="user")
 
     def __repr__(self) -> str:
         return f"User({self.id}, {self.email}, {self.created_at})"

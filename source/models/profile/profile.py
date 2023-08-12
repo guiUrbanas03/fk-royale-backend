@@ -20,4 +20,5 @@ class Profile(db.Model):
     deleted_at = deleted_at()
 
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"), unique=True, nullable=False)
-    user = db.relationship("User", backref="profile")
+    user = db.relationship("User", uselist=False, back_populates="profile")
+    game_stats = db.relationship("GameStats", uselist=False, back_populates="profile")
