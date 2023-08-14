@@ -1,6 +1,7 @@
 """App factory."""
 import os
 from flask import Flask
+from flask_cors import CORS
 from flask.logging import create_logger
 from werkzeug.exceptions import HTTPException
 
@@ -14,11 +15,12 @@ from source.commands.seeders import seed_db
 from source.database.instance import db
 from source.errors.json_error import build_error_response
 from source.jwt.instance import jwt
-
+from source.socketio.instance import socketio
 
 def create_app(test_config=None) -> Flask:
     """Create a flask App."""
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app, origins=['*'])
 
     app.config.from_object("config.settings")
     app.config.from_prefixed_env()
@@ -46,6 +48,7 @@ def register_extensions(app: Flask):
     """Register app extensions."""
     db.init_app(app)
     jwt.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
 
 
 def register_blueprints(app: Flask):

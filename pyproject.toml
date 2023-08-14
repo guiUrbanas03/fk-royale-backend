@@ -17,6 +17,9 @@ flask-jwt-extended = "^4.4.4"
 bcrypt = "^4.0.1"
 marshmallow = "^3.19.0"
 psycopg2-binary = "^2.9.5"
+flask-socketio = "^5.3.5"
+eventlet = "^0.33.3"
+flask-cors = "^4.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
