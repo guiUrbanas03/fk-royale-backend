@@ -13,10 +13,7 @@ from source.blueprints.auth.services import create_revoked_token, get_revoked_to
 from source.blueprints.user.services import get_user_by_id, verify_user_credentials
 from source.constants.blueprints import AUTH_BLUEPRINT_NAME
 from source.dtos.auth import LoginUserDTO
-from source.dtos.game_stats import GameStatsResourceDTO
-from source.dtos.profile import ProfileResourceDTO
 from source.dtos.revoked_token import CreateRevokedTokenDTO, RevokedTokenResourceDTO
-from source.dtos.user import UserResourceDTO
 from source.errors.json_error import CauseTypeError, jwt_error
 from source.jwt.instance import jwt
 from source.jwt.jwt_causes import JwtCause
@@ -49,7 +46,13 @@ def login():
         return DataResponse(
             "User authenticated successfully",
             201,
-            {"access_token": access_token, "refresh_token": refresh_token, "user": user.resource},
+            {
+                "access_token": access_token, 
+                "refresh_token": refresh_token, 
+                "user": user.resource, 
+                "profile": user.profile.resource,
+                "game_stats": user.profile.game_stats.resource
+            },
         ).json()
 
     except ValidationError as error:
@@ -57,13 +60,6 @@ def login():
 
     except ValueError as error:
         abort(400, {"type": CauseTypeError.DATA_VIOLATION_ERROR.value, "data": str(error)})
-
-
-@auth_bp.route("/register", methods=["POST"])
-def register():
-    """Authenticate user by generating JWT tokens."""
-    data = request.json
-    return jsonify(data)
 
 
 @auth_bp.route("/logout", methods=["DELETE"])
@@ -99,9 +95,9 @@ def who_am_i():
         "User retrieved successfully",
         200,
         {
-            "user": UserResourceDTO().dump(current_user),
-            "profile": ProfileResourceDTO().dump(current_user.profile),
-            "game_stats": GameStatsResourceDTO().dump(current_user.profile.game_stats),
+            "user": current_user.resource,
+            "profile": current_user.profile.resource,
+            "game_stats": current_user.profile.game_stats.resource,
         },
     ).json()
 
