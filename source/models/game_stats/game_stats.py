@@ -3,8 +3,9 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from source.constants.tables import GAME_STATS_TABLE_NAME
 from source.database.instance import db
-from source.models.columns import created_at, deleted_at, generate_uuid, updated_at
 from source.dtos.game_stats import GameStatsResourceDTO
+from source.models.columns import created_at, deleted_at, generate_uuid, updated_at
+
 
 class GameStats(db.Model):
     """Define GameStats model."""

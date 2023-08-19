@@ -1,9 +1,3 @@
-from sqlalchemy.dialects.postgresql import UUID
-
-from source.constants.tables import GAME_ROOM_TABLE_NAME
-from source.database.instance import db
-from source.models.columns import created_at, deleted_at, generate_uuid, updated_at
-
 # class GameRoomModel(db.Model):
 #     """Define GameStats model."""
 
@@ -26,7 +20,16 @@ from source.models.columns import created_at, deleted_at, generate_uuid, updated
 
 
 class GameRoom:
-    def __init__(self, id: str, player_id: str, name: str, max_players: int, hearts: int, turn_time_seconds: int, password: str=None) -> None:
+    def __init__(
+        self,
+        id: str,
+        player_id: str,
+        name: str,
+        max_players: int,
+        hearts: int,
+        turn_time_seconds: int,
+        password: str = None,
+    ) -> None:
         self.id = id
         self.player_id = player_id
         self.name = name

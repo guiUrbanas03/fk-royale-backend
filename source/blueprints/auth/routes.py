@@ -1,5 +1,5 @@
 """Handle auth requests."""
-from flask import Blueprint, abort, jsonify, request
+from flask import Blueprint, abort, request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -47,11 +47,11 @@ def login():
             "User authenticated successfully",
             201,
             {
-                "access_token": access_token, 
-                "refresh_token": refresh_token, 
-                "user": user.resource, 
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "user": user.resource,
                 "profile": user.profile.resource,
-                "game_stats": user.profile.game_stats.resource
+                "game_stats": user.profile.game_stats.resource,
             },
         ).json()
 
