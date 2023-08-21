@@ -1,5 +1,6 @@
 """Handle user requests."""
 from flask import Blueprint, abort, jsonify, request
+from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -61,3 +62,10 @@ def create_user():
             "game_stats": GameStatsResourceDTO().dump(game_stats),
         },
     ).json()
+
+
+@user_bp.route("/update", methods=["PUT"])
+@jwt_required()
+def edit_user():
+    data = request.json
+    return data
