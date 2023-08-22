@@ -1,5 +1,6 @@
 """Define DTOs for profile operations."""
 import marshmallow as ma
+from marshmallow import validate
 
 
 class CreateProfileDTO(ma.Schema):
@@ -18,3 +19,8 @@ class ProfileResourceDTO(ma.Schema):
     full_name = ma.fields.Str(required=True)
     nickname = ma.fields.Str(required=True)
     avatar_url = ma.fields.Str()
+
+class UpdateProfileDTO(ma.Schema):
+    """Update Profile DTO schema"""
+    nickname = ma.fields.Str(required=True, validate=validate.Length(min=3))
+    full_name = ma.fields.Str(required=True, validate=validate.Length(min=3))
