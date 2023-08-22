@@ -67,6 +67,7 @@ def create_user():
 @user_bp.route("/update", methods=["PUT"])
 @jwt_required()
 def edit_user():
+    """Function to update nickname and full_name from user profile."""
     data = request.json
     try:
         update_data = UpdateProfileDTO().load(data)
