@@ -1,13 +1,13 @@
 """Handle user requests."""
 from flask import Blueprint, abort, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, current_user
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from source.constants.blueprints import USER_BLUEPRINT_NAME
 from source.database.instance import db
 from source.dtos.game_stats import CreateGameStatsDTO, GameStatsResourceDTO
-from source.dtos.profile import CreateProfileDTO, ProfileResourceDTO
+from source.dtos.profile import CreateProfileDTO, ProfileResourceDTO, UpdateProfileDTO
 from source.dtos.user import CreateUserDTO, UserResourceDTO
 from source.errors.json_error import CauseTypeError
 from source.lib.responses import DataResponse
@@ -68,4 +68,26 @@ def create_user():
 @jwt_required()
 def edit_user():
     data = request.json
-    return data
+    try:
+        update_data = UpdateProfileDTO().load(data)
+        current_user.profile.nickname = update_data["nickname"]
+        current_user.profile.full_name = update_data["full_name"]
+        db.session.commit()
+
+    except ValidationError as error:
+        db.session.rollback()
+        abort(422, {"type": CauseTypeError.VALIDATION_ERROR.value, "data": error.messages})
+
+    except SQLAlchemyError as error:
+        db.session.rollback()
+        abort(500, {"type": CauseTypeError.DATABASE_ERROR.value, "data": str(error)})
+    
+
+    return DataResponse(
+        "User updated succesfully",
+        200,
+        {
+            "nickname": data["nickname"],
+            "full_name": data["full_name"]
+        },
+    ).json()
