@@ -105,7 +105,22 @@ def verify_user_credentials(email: str, password: str) -> Union[User, None]:
 
     return user
 
-def verify_password(current_password: str, new_password: str, confirm_password: str) -> str:
+def verify_password(current_password: str, new_password: str, confirm_password: str) -> bytes:
+    """ Verify current credentials then update password. 
+    Parameters
+    ----------
+    current_password: str
+    new_password: str
+    confirm_password: str
+
+    Returns
+    -------
+    bytes
+
+    Raises
+    ------
+    Value Error
+    """
     if not bcrypt.checkpw(current_password.encode("utf-8"), current_user.password):
         raise ValueError("Invalid credentials")
     
