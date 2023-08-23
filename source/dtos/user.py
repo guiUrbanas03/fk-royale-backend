@@ -1,5 +1,6 @@
 """Define DTOs for user operations."""
 import marshmallow as ma
+from marshmallow import validate
 
 
 class CreateUserDTO(ma.Schema):
@@ -14,3 +15,11 @@ class UserResourceDTO(ma.Schema):
 
     id = ma.fields.UUID(required=True)
     email = ma.fields.Email(required=True)
+
+
+class UserChangePasswordDTO(ma.Schema):
+    """User resource change password DTO schema."""
+
+    old_password = ma.fields.Str(required=True)
+    new_password = ma.fields.Str(required=True, validate=validate.Length(min=6))
+    confirm_new_password = ma.fields.Str(required=True, validate=validate.Length(min=6))
