@@ -1,6 +1,7 @@
 import bcrypt
 from typing import Union
 from uuid import uuid4
+from flask_jwt_extended import current_user
 
 from source.dtos.user import CreateUserDTO
 from source.models.user.user import User
@@ -103,3 +104,30 @@ def verify_user_credentials(email: str, password: str) -> Union[User, None]:
         raise ValueError("Invalid credentials")
 
     return user
+
+def verify_password(current_password: str, new_password: str, confirm_password: str) -> bytes:
+    """ Verify current credentials then update password. 
+    Parameters
+    ----------
+    current_password: str
+    new_password: str
+    confirm_password: str
+
+    Returns
+    -------
+    bytes
+
+    Raises
+    ------
+    Value Error
+    """
+    if not bcrypt.checkpw(current_password.encode("utf-8"), current_user.password):
+        raise ValueError("Invalid credentials")
+    
+    if new_password != confirm_password:
+        raise ValueError("Passwords don't match")
+
+    if bcrypt.checkpw(new_password.encode("utf-8"), current_user.password):
+        raise ValueError("Password is the same as the old password")
+
+    return hash_password(new_password)
