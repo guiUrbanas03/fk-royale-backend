@@ -4,17 +4,18 @@ from flask_jwt_extended import jwt_required, current_user
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
+
 from source.constants.blueprints import USER_BLUEPRINT_NAME
 from source.database.instance import db
 from source.dtos.game_stats import CreateGameStatsDTO, GameStatsResourceDTO
 from source.dtos.profile import CreateProfileDTO, ProfileResourceDTO, UpdateProfileDTO
-from source.dtos.user import CreateUserDTO, UserResourceDTO, UserChangePasswordDTO
+from source.dtos.user import CreateUserDTO, UserResourceDTO, UserChangePasswordDTO, UserDeleteDTO
 from source.errors.json_error import CauseTypeError
 from source.lib.responses import DataResponse
 
 from ..game_stats.services import create_new_game_stats
 from ..profile.services import create_new_profile
-from .services import create_new_user, verify_password
+from .services import create_new_user, verify_password, delete_user
 
 user_bp = Blueprint(USER_BLUEPRINT_NAME, __name__, url_prefix=f"/{USER_BLUEPRINT_NAME}")
 
@@ -120,4 +121,32 @@ def change_password():
         {
         },
     ).json()
+
+
+@user_bp.route("/delete_account", methods=["DELETE"]) 
+@jwt_required()
+def user_del():
+    """Allow the user to delete his own account"""
+
+    data = request.json
+
+    try:
+        delete_confirm = UserDeleteDTO().load(data)
+        delete_user(delete_confirm["confirm_deletion"])
+        db.session.commit()
+
+    except ValueError as error:
+        db.session.rollback()
+        abort(422, {"type": CauseTypeError.VALIDATION_ERROR.value, "data": str(error)})
+        
+    return DataResponse(
+        "User deletion succesfully",
+        200,
+        {
+            "User": "Deleted",
+            "Profile": "Deleted",
+            "Game Stats": "Deleted"
+        },
+    ).json()
+
 
