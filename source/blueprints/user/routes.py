@@ -9,7 +9,7 @@ from source.constants.blueprints import USER_BLUEPRINT_NAME
 from source.database.instance import db
 from source.dtos.game_stats import CreateGameStatsDTO, GameStatsResourceDTO
 from source.dtos.profile import CreateProfileDTO, ProfileResourceDTO, UpdateProfileDTO
-from source.dtos.user import CreateUserDTO, UserResourceDTO, UserChangePasswordDTO, UserDeleteDTO
+from source.dtos.user import CreateUserDTO, UserResourceDTO, UserChangePasswordDTO
 from source.errors.json_error import CauseTypeError
 from source.lib.responses import DataResponse
 
@@ -128,12 +128,13 @@ def change_password():
 def user_del():
     """Allow the user to delete his own account"""
 
-    data = request.json
-
     try:
-        delete_confirm = UserDeleteDTO().load(data)
-        delete_user(delete_confirm["confirm_deletion"])
-        db.session.commit()
+        if not current_user.deleted_at:
+            delete_user()
+            db.session.commit()
+            
+        else:   
+            return 'User already deleted.'
 
     except ValueError as error:
         db.session.rollback()
@@ -143,9 +144,9 @@ def user_del():
         "User deletion succesfully",
         200,
         {
-            "User": "Deleted",
-            "Profile": "Deleted",
-            "Game Stats": "Deleted"
+            "user": "deleted",
+            "profile": "deleted",
+            "game_stats": "deleted",
         },
     ).json()
 

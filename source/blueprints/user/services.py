@@ -134,20 +134,12 @@ def verify_password(current_password: str, new_password: str, confirm_password: 
     return hash_password(new_password)
 
 
-def delete_user(answer: str):
+def delete_user():
     """Save the date of delete account at column 'deleted_at' for User, Profile and Game Stats."""
     
-    if answer == "yes":
-        date_delete = func.now()
-        current_user.deleted_at = date_delete
-        current_user.profile.deleted_at = date_delete
-        current_user.profile.game_stats.deleted_at = date_delete
-        
-    else:
-        raise ValueError("Invalid option")
-        
-
-    
-    
-
+    date_delete = func.now()
+    current_user.deleted_at = date_delete
+    current_user.profile.deleted_at = date_delete
+    current_user.profile.game_stats.deleted_at = date_delete
+    return current_user    
     

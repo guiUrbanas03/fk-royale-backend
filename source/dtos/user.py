@@ -23,9 +23,3 @@ class UserChangePasswordDTO(ma.Schema):
     old_password = ma.fields.Str(required=True)
     new_password = ma.fields.Str(required=True, validate=validate.Length(min=6))
     confirm_new_password = ma.fields.Str(required=True, validate=validate.Length(min=6))
-
-
-class UserDeleteDTO(ma.Schema):
-    """User confirmation to delete account"""
-
-    confirm_deletion = ma.fields.Str(required=True)
