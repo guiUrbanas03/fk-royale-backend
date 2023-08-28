@@ -15,7 +15,7 @@ from source.lib.responses import DataResponse
 
 from ..game_stats.services import create_new_game_stats
 from ..profile.services import create_new_profile
-from .services import create_new_user, verify_password, delete_user
+from .services import create_new_user, verify_password, user_deletion
 
 user_bp = Blueprint(USER_BLUEPRINT_NAME, __name__, url_prefix=f"/{USER_BLUEPRINT_NAME}")
 
@@ -125,16 +125,16 @@ def change_password():
 
 @user_bp.route("/delete_account", methods=["DELETE"]) 
 @jwt_required()
-def user_del():
+def delete_user():
     """Allow the user to delete his own account"""
 
     try:
         if not current_user.deleted_at:
-            delete_user()
+            user_deletion()
             db.session.commit()
             
         else:   
-            return 'User already deleted.'
+           abort(409, {"type": CauseTypeError.DATA_VIOLATION_ERROR.value, "data": "User already deleted."})
 
     except ValueError as error:
         db.session.rollback()

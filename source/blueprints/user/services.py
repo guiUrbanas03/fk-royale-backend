@@ -134,7 +134,7 @@ def verify_password(current_password: str, new_password: str, confirm_password: 
     return hash_password(new_password)
 
 
-def delete_user():
+def user_deletion():
     """Save the date of delete account at column 'deleted_at' for User, Profile and Game Stats."""
     
     date_delete = func.now()
