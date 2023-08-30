@@ -2,6 +2,7 @@ import bcrypt
 from typing import Union
 from uuid import uuid4
 from flask_jwt_extended import current_user
+from sqlalchemy import func
 
 from source.dtos.user import CreateUserDTO
 from source.models.user.user import User
@@ -131,3 +132,14 @@ def verify_password(current_password: str, new_password: str, confirm_password: 
         raise ValueError("Password is the same as the old password")
 
     return hash_password(new_password)
+
+
+def user_deletion():
+    """Save the date of delete account at column 'deleted_at' for User, Profile and Game Stats."""
+    
+    date_delete = func.now()
+    current_user.deleted_at = date_delete
+    current_user.profile.deleted_at = date_delete
+    current_user.profile.game_stats.deleted_at = date_delete
+    return current_user    
+    
