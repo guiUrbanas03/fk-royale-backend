@@ -5,15 +5,15 @@ Revises: f9a150afc985
 Create Date: 2023-08-28 13:52:52.986703
 
 """
+import sqlalchemy as sa
 from alembic import op
 from uuid import uuid4
-import sqlalchemy as sa
 
 from source.constants.tables import REPORTS_TABLE_NAME
 
 # revision identifiers, used by Alembic.
-revision = '1525890b9bd9'
-down_revision = 'f9a150afc985'
+revision = "1525890b9bd9"
+down_revision = "f9a150afc985"
 branch_labels = None
 depends_on = None
 
@@ -34,7 +34,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("profile_id", sa.UUID(as_uuid=True), nullable=False),
-        sa.ForeignKeyConstraint(["profile_id"], ["profiles.id"])
+        sa.ForeignKeyConstraint(["profile_id"], ["profiles.id"]),
     )
 
 
