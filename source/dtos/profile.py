@@ -20,7 +20,9 @@ class ProfileResourceDTO(ma.Schema):
     nickname = ma.fields.Str(required=True)
     avatar_url = ma.fields.Str()
 
+
 class UpdateProfileDTO(ma.Schema):
     """Update Profile DTO schema"""
+
     nickname = ma.fields.Str(required=True, validate=validate.Length(min=3))
     full_name = ma.fields.Str(required=True, validate=validate.Length(min=3))

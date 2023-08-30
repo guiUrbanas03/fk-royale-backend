@@ -1,8 +1,8 @@
 import bcrypt
-from typing import Union
-from uuid import uuid4
 from flask_jwt_extended import current_user
 from sqlalchemy import func
+from typing import Union
+from uuid import uuid4
 
 from source.dtos.user import CreateUserDTO
 from source.models.user.user import User
@@ -106,8 +106,9 @@ def verify_user_credentials(email: str, password: str) -> Union[User, None]:
 
     return user
 
+
 def verify_password(current_password: str, new_password: str, confirm_password: str) -> bytes:
-    """ Verify current credentials then update password. 
+    """Verify current credentials then update password.
     Parameters
     ----------
     current_password: str
@@ -124,7 +125,7 @@ def verify_password(current_password: str, new_password: str, confirm_password: 
     """
     if not bcrypt.checkpw(current_password.encode("utf-8"), current_user.password):
         raise ValueError("Invalid credentials")
-    
+
     if new_password != confirm_password:
         raise ValueError("Passwords don't match")
 
@@ -136,10 +137,9 @@ def verify_password(current_password: str, new_password: str, confirm_password: 
 
 def user_deletion():
     """Save the date of delete account at column 'deleted_at' for User, Profile and Game Stats."""
-    
+
     date_delete = func.now()
     current_user.deleted_at = date_delete
     current_user.profile.deleted_at = date_delete
     current_user.profile.game_stats.deleted_at = date_delete
-    return current_user    
-    
+    return current_user
