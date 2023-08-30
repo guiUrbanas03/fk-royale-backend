@@ -23,6 +23,7 @@ class Profile(db.Model):
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"), unique=True, nullable=False)
     user = db.relationship("User", uselist=False, back_populates="profile")
     game_stats = db.relationship("GameStats", uselist=False, back_populates="profile")
+    reports = db.relationship("Report", uselist=True, back_populates="profile")
 
     @property
     def resource(self):
