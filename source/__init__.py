@@ -9,6 +9,7 @@ from source.blueprints.auth.routes import auth_bp
 from source.blueprints.game_stats.routes import game_stats_bp
 from source.blueprints.index.routes import index_bp
 from source.blueprints.profile.routes import profile_bp
+from source.blueprints.report.routes import report_bp
 from source.blueprints.user.routes import user_bp
 from source.blueprints.xp_event_type.routes import xp_event_type_bp
 from source.commands.seeders import seed_db
@@ -57,6 +58,7 @@ def register_blueprints(app: Flask):
     app.register_blueprint(index_bp)
     app.register_blueprint(game_stats_bp)
     app.register_blueprint(profile_bp)
+    app.register_blueprint(report_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(xp_event_type_bp)
     app.register_blueprint(auth_bp)
