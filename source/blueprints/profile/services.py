@@ -2,7 +2,9 @@ from typing import Union
 from uuid import uuid4
 
 from source.dtos.profile import CreateProfileDTO
+from source.dtos.report import CreateReportDTO
 from source.models.profile.profile import Profile
+from source.models.report.report import Report
 
 
 def get_profile_by_nickname(nickname: str) -> Union[Profile, None]:
@@ -44,3 +46,13 @@ def create_new_profile(session, profile_data: CreateProfileDTO) -> Union[Profile
     session.flush()
 
     return profile
+
+
+def creat_new_report(session, report_data: CreateReportDTO):
+    """Create new report."""
+    report = Report(**report_data, id=uuid4())
+
+    session.add(report)
+    session.flush()
+
+    return report
