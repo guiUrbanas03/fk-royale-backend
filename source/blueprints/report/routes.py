@@ -1,6 +1,7 @@
 from flask import Blueprint, abort, jsonify, request
 from flask_jwt_extended import current_user, jwt_required
 from marshmallow import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from source.constants.blueprints import REPORT_BLUEPRINT_NAME
 from source.database.instance import db
@@ -42,6 +43,24 @@ def report_something():
             "subject": report_data["subject"],
             "description": report_data["description"],
         },
+    ).json()
+
+
+@report_bp.route("/report_bt_profile_id/<profile_id>")
+def get_report_by_profile_id(profile_id):
+    """Take all the reports from a specific profile ID."""
+    try:
+        profile_id_from_table = Report.query.filter(Report.profile_id == profile_id)
+        data_reports = ReportResourceDTO(many=True).dump(profile_id_from_table)
+
+    except SQLAlchemyError as error:
+        db.session.rollback()
+        abort(500, {"type": CauseTypeError.DATABASE_ERROR.value, "data": str(error)})
+
+    return DataResponse(
+        "Get reports by profile_id successfully",
+        200,
+        {"all_profile_reports": data_reports},
     ).json()
 
 

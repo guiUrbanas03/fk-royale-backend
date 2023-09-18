@@ -13,7 +13,7 @@ class CreateReportDTO(ma.Schema):
 
 
 class ReportResourceDTO(ma.Schema):
-    """Take all reports data DTO schema."""
+    """Resource Report DTO schema."""
 
     category = ma.fields.Str(required=True, validate=validate.OneOf(["bugs", "suggestions"]))
     subject = ma.fields.Str(required=True, validate=validate.Length(min=3))
