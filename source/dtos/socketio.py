@@ -45,3 +45,14 @@ class SocketStateResourceDTO(ma.Schema):
     games = ma.fields.Nested(GameResourceDTO, many=True)
     players = ma.fields.Nested(PlayerResourceDTO, many=True)
     current_player = ma.fields.Nested(PlayerResourceDTO)
+
+
+class GameContextResourceDTO(ma.Schema):
+    games = ma.fields.Dict(keys=ma.fields.Str(), values=ma.fields.Nested(GameResourceDTO))
+
+    players = ma.fields.Dict(keys=ma.fields.Str(), values=ma.fields.Nested(PlayerResourceDTO))
+
+
+class GameAndPlayerResourceDTO(ma.Schema):
+    game = ma.fields.Nested(GameResourceDTO)
+    player = ma.fields.Nested(PlayerResourceDTO)

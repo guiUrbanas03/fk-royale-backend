@@ -62,3 +62,16 @@ def get_report_by_profile_id(profile_id):
         200,
         {"all_profile_reports": data_reports},
     ).json()
+
+
+@report_bp.route("/get_all_reports/")
+def get_all_reports():
+    """Take all the reports from the table report."""
+    table_reports = Report.query.all()
+    data_reports = ReportResourceDTO(many=True).dump(table_reports)
+
+    return DataResponse(
+        "Get all reports successfully",
+        200,
+        {"all_reports": data_reports},
+    ).json()
