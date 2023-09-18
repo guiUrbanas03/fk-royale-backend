@@ -4,9 +4,10 @@ from marshmallow import ValidationError
 
 from source.constants.blueprints import REPORT_BLUEPRINT_NAME
 from source.database.instance import db
-from source.dtos.report import CreateReportDTO
+from source.dtos.report import CreateReportDTO, ReportResourceDTO
 from source.errors.json_error import CauseTypeError
 from source.lib.responses import DataResponse
+from source.models.report.report import Report
 
 from .services import creat_new_report
 
@@ -41,4 +42,17 @@ def report_something():
             "subject": report_data["subject"],
             "description": report_data["description"],
         },
+    ).json()
+
+
+@report_bp.route("/get_all_reports/")
+def get_all_reports():
+    """Take all the reports from the table report."""
+    table_reports = Report.query.all()
+    data_reports = ReportResourceDTO(many=True).dump(table_reports)
+
+    return DataResponse(
+        "Get all reports successfully",
+        200,
+        {"all_reports": data_reports},
     ).json()
