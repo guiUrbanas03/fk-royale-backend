@@ -46,7 +46,7 @@ def report_something():
     ).json()
 
 
-@report_bp.route("/report_bt_profile_id/<profile_id>")
+@report_bp.route("/report_bt_profile_id/<profile_id>", methods=["GET"])
 def get_report_by_profile_id(profile_id):
     """Take all the reports from a specific profile ID."""
     try:
@@ -64,7 +64,7 @@ def get_report_by_profile_id(profile_id):
     ).json()
 
 
-@report_bp.route("/get_all_reports/")
+@report_bp.route("/get_all_reports/", methods=["GET"])
 def get_all_reports():
     """Take all the reports from the table report."""
     table_reports = Report.query.all()
@@ -74,4 +74,23 @@ def get_all_reports():
         "Get all reports successfully",
         200,
         {"all_reports": data_reports},
+    ).json()
+
+
+@report_bp.route("/delete_report/<report_id>", methods=["DELETE"])
+def delete_report(report_id):
+    try:
+        report = Report.query.filter(Report.id == report_id).first()
+        data_report_delete = ReportResourceDTO().dump(report)
+        db.session.delete(report)
+        db.session.commit()
+
+    except SQLAlchemyError as error:
+        db.session.rollback()
+        abort(500, {"type": CauseTypeError.DATABASE_ERROR.value, "data": str(error)})
+
+    return DataResponse(
+        "Deletion by report_id successfully",
+        200,
+        {"data_report_deletion": data_report_delete},
     ).json()
