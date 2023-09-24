@@ -1,5 +1,5 @@
 from flask import abort, request
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, close_room, emit, join_room, leave_room
 from jwt.exceptions import DecodeError
 
 from source.blueprints.auth.services import get_user_by_token
@@ -100,7 +100,6 @@ def leave_game_room(data):
 
     leave_room(game.room.str_id)
 
-    # TODO: Fix remove game when last player leaves.
-    # if len(game.room.players) == 0:
-    #     close_room(game.room.str_id)
-    #     context.remove_game(game)
+    if player.socket_id == game.room.owner.socket_id:
+        close_room(game.room.str_id)
+        context.remove_game(game)

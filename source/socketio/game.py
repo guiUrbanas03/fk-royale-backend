@@ -53,7 +53,8 @@ class GameContextManager(Observer):
     def remove_game(self, game: Game):
         self.games.pop(game.str_id)
 
-        print("--- GAMES NOW -->: ", self.games)
+        self.players[request.sid].current_game = None
+
         self.notify_all({"type": "remove_game", "data": game})
 
     def add_to_room(self, game: Game, player: Player):
@@ -69,7 +70,5 @@ class GameContextManager(Observer):
 
         room.players.remove(player)
         player.current_game = None
-
-        print("GAME AFTER REMOVE: ", game.room.players)
 
         self.notify_all({"type": "remove_from_room", "data": GameAndPlayer(game, player)})
