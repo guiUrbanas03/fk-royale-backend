@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from source.dtos.socketio import PlayerResourceDTO
 
 if TYPE_CHECKING:
-    from source.models.game.game import Game
+    from uuid import UUID
+
     from source.models.user.user import User
 
 
@@ -15,7 +16,7 @@ class Player:
     def __init__(self, socket_id: str, user: User) -> None:
         self.socket_id: str = socket_id
         self.user: User = user
-        self.current_game: Game = None
+        self.current_game_id: UUID = None
         self.status: str = "idle"  # idle | unready | ready | playing
 
     def __repr__(self) -> str:

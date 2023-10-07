@@ -1,12 +1,6 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from source.dtos.socketio import GameResourceDTO, GameSettingsResourceDTO
-
-if TYPE_CHECKING:
-    from source.models.room.room import Room
 
 
 class GameSettings:
@@ -28,14 +22,14 @@ class GameSettings:
 class Game:
     """Define game model."""
 
-    def __init__(self, room: Room, settings: GameSettings) -> None:
+    def __init__(self, room_id: UUID, settings: GameSettings) -> None:
         self.id = uuid4()
         self.status = "waiting"  # waiting | playing
-        self.room = room
+        self.room_id: UUID = room_id
         self.settings = settings
 
     def __repr__(self) -> str:
-        return f"{self.str_id}, {self.room.name}, {self.status}, {self.room}"
+        return f"{self.str_id}, {self.room_id}, {self.status}"
 
     @property
     def str_id(self) -> str:

@@ -2,7 +2,7 @@
 
 from source.constants.tables import USERS_TABLE_NAME
 from source.database.instance import db
-from source.dtos.user import UserResourceDTO
+from source.dtos.user import FullUserResourceDTO, UserResourceDTO
 from source.models.columns import created_at, deleted_at, generate_uuid, updated_at
 
 
@@ -25,3 +25,7 @@ class User(db.Model):
     @property
     def resource(self):
         return UserResourceDTO().dump(self)
+
+    @property
+    def full_resource(self):
+        return FullUserResourceDTO().dump(self)

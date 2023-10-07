@@ -1,14 +1,14 @@
 import marshmallow as ma
 
-from source.dtos.user import UserResourceDTO
+from source.dtos.user import FullUserResourceDTO
 
 
 class PlayerResourceDTO(ma.Schema):
     """Player resource dto."""
 
     socket_id = ma.fields.Str(required=True)
-    user = ma.fields.Nested(UserResourceDTO)
-    current_game = ma.fields.Nested(lambda: GameResourceDTO())
+    user = ma.fields.Nested(FullUserResourceDTO)
+    current_game_id = ma.fields.UUID()
     status = ma.fields.Str(required=True)
 
 
@@ -18,8 +18,8 @@ class RoomResourceDTO(ma.Schema):
     id = ma.fields.UUID(required=True)
     name = ma.fields.Str(required=True)
     password = ma.fields.Str()
-    owner = ma.fields.Nested(PlayerResourceDTO(exclude=["current_game"]))
-    players = ma.fields.Nested(PlayerResourceDTO(exclude=["current_game"]), many=True)
+    owner_id = ma.fields.Str(required=True)
+    player_ids = ma.fields.List(ma.fields.Str(), required=True)
 
 
 class GameSettingsResourceDTO(ma.Schema):
@@ -35,24 +35,11 @@ class GameResourceDTO(ma.Schema):
 
     id = ma.fields.UUID(required=True)
     status = ma.fields.Str(required=True)
-    room = ma.fields.Nested(RoomResourceDTO)
+    room_id = ma.fields.UUID(required=True)
     settings = ma.fields.Nested(GameSettingsResourceDTO)
-
-
-class SocketStateResourceDTO(ma.Schema):
-    """Socket state resource dto."""
-
-    games = ma.fields.Nested(GameResourceDTO, many=True)
-    players = ma.fields.Nested(PlayerResourceDTO, many=True)
-    current_player = ma.fields.Nested(PlayerResourceDTO)
 
 
 class GameContextResourceDTO(ma.Schema):
     games = ma.fields.Dict(keys=ma.fields.Str(), values=ma.fields.Nested(GameResourceDTO))
-
     players = ma.fields.Dict(keys=ma.fields.Str(), values=ma.fields.Nested(PlayerResourceDTO))
-
-
-class GameAndPlayerResourceDTO(ma.Schema):
-    game = ma.fields.Nested(GameResourceDTO)
-    player = ma.fields.Nested(PlayerResourceDTO)
+    rooms = ma.fields.Dict(keys=ma.fields.Str(), values=ma.fields.Nested(RoomResourceDTO))
