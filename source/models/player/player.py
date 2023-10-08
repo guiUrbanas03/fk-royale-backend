@@ -24,4 +24,16 @@ class Player:
 
     @property
     def resource(self):
-        return PlayerResourceDTO().dump(self)
+        return PlayerResourceDTO().dump(
+            {
+                "socket_id": self.socket_id,
+                "user": {
+                    "id": self.user.id,
+                    "email": self.user.email,
+                    "profile": self.user.profile,
+                    "game_stats": self.user.profile.game_stats,
+                },
+                "current_game_id": self.current_game_id,
+                "status": "self.status",
+            }
+        )

@@ -28,4 +28,6 @@ class User(db.Model):
 
     @property
     def full_resource(self):
-        return FullUserResourceDTO().dump(self)
+        return FullUserResourceDTO().dump(
+            {**self, "profile": self.profile, "game_stats": self.profile.game_stats}
+        )

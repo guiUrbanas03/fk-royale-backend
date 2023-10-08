@@ -36,7 +36,6 @@ def connect(data: dict = {}):
             player: Player = Player(request.sid, user)
 
             context.add_player(player)
-
             emit("fetch_state", context.resource)
 
     except DecodeError as error:
