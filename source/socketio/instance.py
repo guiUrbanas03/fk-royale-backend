@@ -11,9 +11,7 @@ from source.models.user.user import User
 from source.socketio.game import GameContextManager
 
 socketio: SocketIO = SocketIO(cors_allowed_origins="*", logger=True)
-
 context: GameContextManager = GameContextManager()
-
 
 def resource(data: dict):
     return data.resource if "resource" in data else data
@@ -69,6 +67,7 @@ def create_game_room(data):
     join_room(room.str_id)
 
     context.add_game(game, room, request.sid)
+    
 
 
 @socketio.on("join_game_room")
@@ -94,3 +93,23 @@ def leave_game_room(data):
     if request.sid == context.get_room(room_id).owner_id:
         close_room(room_id)
         context.remove_game(game)
+
+
+@socketio.on("get_ready")
+def get_ready():
+    print(f"{request.sid} is ready to play")
+    context.get_ready(request.sid)
+
+
+@socketio.on("get_unready")
+def get_unready():
+    print(f"{request.sid} is not ready to play")
+    context.get_unready(request.sid)
+
+
+@socketio.on("start_game_match")
+def start_game_match(data):
+    print(f"{request.sid}: Starting game match {data}")
+    context.start_game_match(data)
+    
+    

@@ -17,7 +17,7 @@ class Player:
         self.socket_id: str = socket_id
         self.user: User = user
         self.current_game_id: UUID = None
-        self.status: str = "idle"  # idle | unready | ready | playing
+        self.status: str = "idle"  # idle | owner | unready | ready | playing
 
     def __repr__(self) -> str:
         return f"Player({self.socket_id}, {self.user.profile.nickname}, {self.status})"
@@ -34,6 +34,6 @@ class Player:
                     "game_stats": self.user.profile.game_stats,
                 },
                 "current_game_id": self.current_game_id,
-                "status": "self.status",
+                "status": self.status,
             }
         )

@@ -38,6 +38,7 @@ class GameContextManager(Observer):
 
         owner: Player = self.get_player(owner_id)
         owner.current_game_id = game.str_id
+        owner.status = "owner"
 
         added_room: Room = self.get_room(room.str_id)
         added_room.player_ids = [owner_id]
@@ -68,6 +69,7 @@ class GameContextManager(Observer):
         for player_id in room.player_ids:
             player: Player = self.get_player(player_id)
             player.current_game_id = None
+            player.status = "idle"
             removed_players.append(player.resource)
 
         self.rooms.pop(room_id)
@@ -85,6 +87,7 @@ class GameContextManager(Observer):
 
         room.player_ids.append(player.socket_id)
         player.current_game_id = game.str_id
+        player.status = "unready"
 
         self.notify_all(
             {
@@ -99,6 +102,7 @@ class GameContextManager(Observer):
 
         room.player_ids.remove(player_id)
         player.current_game_id = None
+        player.status = "idle"
 
         self.notify_all(
             {
@@ -106,3 +110,32 @@ class GameContextManager(Observer):
                 "data": {"player": player.resource, "game": game.resource, "room": room.resource},
             }
         )
+
+    def get_ready(self, player_id: str):
+        player: Player = self.get_player(player_id)
+        player.status = "ready"
+
+        self.notify_all(
+            {
+                "type": "get_ready",
+                "data": player.resource,
+            }
+        )
+
+
+    def get_unready(self, player_id: str):
+        player: Player = self.get_player(player_id)
+        player.status = "unready"
+
+        self.notify_all(
+        {
+            "type": "get_unready",
+            "data": player.resource,
+        }
+    )
+
+    def start_game_match(self, game_id: str):
+        self.notify_all({
+            "type": "start_game_match",
+            "data": game_id,
+        })
