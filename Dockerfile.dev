@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     POETRY_NO_INTERACTION=true \
     POETRY_NO_ANSI=true \
     POETRY_INSTALLER_NO_BINARY=:all: \
-    FLASK_APP=source:create_app \
+    FLASK_APP=source \
     FLASK_DEBUG=1 \
     FLASK_ENV=development
 
@@ -35,6 +35,6 @@ COPY ./source ./source
 
 EXPOSE 8000
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+CMD ["python", "-m", "source"]
 
 

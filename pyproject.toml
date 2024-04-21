@@ -20,6 +20,8 @@ psycopg2-binary = "^2.9.5"
 flask-socketio = "^5.3.5"
 eventlet = "^0.33.3"
 flask-cors = "^4.0.0"
+gevent = "^24.2.1"
+gevent-websocket = "^0.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
