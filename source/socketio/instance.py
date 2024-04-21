@@ -1,28 +1,33 @@
 from flask import abort, request
 from flask_socketio import SocketIO, close_room, emit, join_room, leave_room
-from jwt.exceptions import DecodeError
+from jwt.exceptions import DecodeError, ExpiredSignatureError
 
 from source.blueprints.auth.services import get_user_by_token
-from source.errors.json_error import CauseTypeError
+from source.errors.json_error import CauseTypeError, jwt_error
+from source.jwt.jwt_causes import JwtCause
 from source.models.game.game import Game, GameSettings
 from source.models.player.player import Player
 from source.models.room.room import Room
 from source.models.user.user import User
 from source.socketio.game import GameContextManager
 
-socketio: SocketIO = SocketIO(cors_allowed_origins="*", logger=True)
+socketio: SocketIO = SocketIO(cors_allowed_origins="*", logger=True, async_mode="gevent")
 context: GameContextManager = GameContextManager()
+
 
 def resource(data: dict):
     return data.resource if "resource" in data else data
 
 
-def _command_function(command: dict):
+def socket_command(command: dict):
     print(f"({request.sid})---> Emitting command: {command['type']}, {command['data']}\n")
-    socketio.emit(command["type"], command["data"])
+    if "room" in command:
+        emit(command["type"], command["data"], room=command["room"])
+    else:
+        socketio.emit(command["type"], command["data"])
 
 
-context.observe(_command_function)
+context.observe(socket_command)
 
 
 @socketio.on("connect")
@@ -39,13 +44,24 @@ def connect(data: dict = {}):
     except DecodeError as error:
         abort(401, {"type": CauseTypeError.TOKEN_ERROR.value, "data": str(error)})
 
+    except ExpiredSignatureError as error:
+        print("---> EXPIRED ERRROR: ", error["jwt_data"])
+        if error["jwt_data"]["type"] == "refresh":
+            return jwt_error(JwtCause.REFRESH_TOKEN_EXPIRED.value)
+        return jwt_error(JwtCause.ACCESS_TOKEN_EXPIRED.value)
+
 
 @socketio.on("disconnect")
 def disconnect():
     """Disconnect player"""
-    player: Player = context.get_player(request.sid)
+    try:
+        player: Player = context.get_player(request.sid)
 
-    context.remove_player(player)
+        if player.current_game_id:
+            leave_game_room({"game_id": player.current_game_id})
+        context.remove_player(player)
+    except KeyError as error:
+        abort(400, {"type": CauseTypeError.DATA_VIOLATION_ERROR.value, "data": str(error)})
 
 
 @socketio.on("create_game_room")
@@ -67,7 +83,6 @@ def create_game_room(data):
     join_room(room.str_id)
 
     context.add_game(game, room, request.sid)
-    
 
 
 @socketio.on("join_game_room")
@@ -111,5 +126,3 @@ def get_unready():
 def start_game_match(data):
     print(f"{request.sid}: Starting game match {data}")
     context.start_game_match(data)
-    
-    

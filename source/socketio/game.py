@@ -27,6 +27,14 @@ class GameContextManager(Observer):
     def get_room(self, id: str) -> Room:
         return self.rooms[id]
 
+    def get_players_in_room(self, room: Room) -> list[Player]:
+        players: list[Player] = []
+
+        for player_id in room.player_ids:
+            players.append(self.get_player(player_id))
+
+        return players
+
     def add_player(self, player: Player):
         self.players[player.socket_id] = player
 
@@ -62,22 +70,24 @@ class GameContextManager(Observer):
     def remove_game(self, game: Game):
         room_id = str(game.room_id)
         room: Room = self.get_room(room_id)
-        removed_players: list[Player] = []
+        players = self.get_players_in_room(room)
 
         self.games.pop(game.str_id)
 
-        for player_id in room.player_ids:
-            player: Player = self.get_player(player_id)
+        for player in players:
             player.current_game_id = None
             player.status = "idle"
-            removed_players.append(player.resource)
 
         self.rooms.pop(room_id)
 
         self.notify_all(
             {
                 "type": "remove_game",
-                "data": {"game": game.resource, "room": room.resource, "players": removed_players},
+                "data": {
+                    "game": game.resource,
+                    "room": room.resource,
+                    "players": [player.resource for player in players],
+                },
             }
         )
 
@@ -122,20 +132,30 @@ class GameContextManager(Observer):
             }
         )
 
-
     def get_unready(self, player_id: str):
         player: Player = self.get_player(player_id)
         player.status = "unready"
 
         self.notify_all(
-        {
-            "type": "get_unready",
-            "data": player.resource,
-        }
-    )
+            {
+                "type": "get_unready",
+                "data": player.resource,
+            }
+        )
 
     def start_game_match(self, game_id: str):
-        self.notify_all({
-            "type": "start_game_match",
-            "data": game_id,
-        })
+        game: Game = self.get_game(game_id)
+        room: Room = self.get_room(str(game.room_id))
+        players: list[Player] = self.get_players_in_room(room)
+
+        game.status = "playing"
+
+        for player in players:
+            player.status = "playing"
+
+        self.notify_all(
+            {
+                "type": "start_game_match",
+                "data": {"game": game.resource, "players": [player.resource for player in players]},
+            }
+        )

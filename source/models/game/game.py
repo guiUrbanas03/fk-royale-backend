@@ -24,7 +24,7 @@ class Game:
 
     def __init__(self, room_id: UUID, settings: GameSettings) -> None:
         self.id = uuid4()
-        self.status = "waiting"  # waiting | playing
+        self.status = "waiting"  # waiting | playing | "finished"
         self.room_id: UUID = room_id
         self.settings = settings
 
